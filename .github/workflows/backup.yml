@@ -1,0 +1,64 @@
+name: Backup
+
+on:
+  workflow_dispatch:
+    inputs: {}
+  schedule:
+    - cron:  0 * * * *
+
+env:
+  SRC_REPO: thphd/2047
+
+jobs:
+  backup:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - run: npm i node-fetch
+      - uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const fetch = require(`${process.env.GITHUB_WORKSPACE}/node_modules/node-fetch`)
+
+            const getSrcAsset = async () => {
+              const [owner, repo] = process.env.SRC_REPO.split('/')
+
+              const res = await github.repos.listReleases({
+                owner,
+                repo
+              })
+              const release = res.data[0]
+              const asset = release.assets[0]
+
+              console.log('src asset', asset)
+
+              const { name, browser_download_url } = asset
+
+              return {
+                name,
+                url: browser_download_url
+              }
+            }
+
+            const { data: { assets, upload_url } } = await github.repos.getLatestRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            })
+
+            const { name, url } = await getSrcAsset()
+            const exist = assets.some(a => a.name === name)
+
+            console.log('exists', exist)
+
+            if (!exist) {
+              const data = await(await fetch(url)).buffer()
+
+              const res = await github.repos.uploadReleaseAsset({
+                url: upload_url,
+                name,
+                data,
+              })
+              console.log(res)
+            }
