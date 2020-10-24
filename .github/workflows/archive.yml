@@ -1,0 +1,24 @@
+name: Save to archive.org
+
+on:
+  workflow_dispatch:
+    inputs: {}
+  schedule:
+    - cron: "*/20 * * * *"
+
+env:
+  URL: https://2047.name/
+
+jobs:
+  backup:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+
+      - run: npm i node-fetch jsdom request
+      - run: node archive.js
