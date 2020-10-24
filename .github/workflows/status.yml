@@ -1,0 +1,36 @@
+name: 2047.name Status
+
+on:
+  workflow_dispatch:
+    inputs: {}
+  schedule:
+    - cron: "*/10 * * * *"
+
+env:
+  URL: https://2047.name/
+  OUT_DIR: ./status
+
+jobs:
+  backup:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+
+      - run: git config --global user.email bot@example.com
+      - run: git config --global user.name bot
+
+      - run: npm i node-fetch
+      - run: node status.js
+
+      - name: commit
+        run: |
+          git pull;
+          git add .;
+          git commit -m "$(date -u -Imin)";
+          git pull;
+          git push;
