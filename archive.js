@@ -22,7 +22,7 @@ const archive = async (url) => {
   const text = await r.text()
 
   if (!r.ok) {
-    throw new Error(text)
+    throw new Error(r.status + ' ' + r.statusText)
   }
 }
 
