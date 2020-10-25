@@ -5,7 +5,7 @@ const { JSDOM } = require('jsdom')
 
 const BASE_URL = process.env.URL
 
-const REQ_LIMIT = 23
+const REQ_LIMIT = 19
 const WAIT_TIME = 60 * 1000 // 60s
 
 const date = +new Date()
@@ -30,10 +30,12 @@ JSDOM.fromURL(BASE_URL).then(async (dom) => {
   const document = dom.window.document
   /** @type {NodeListOf<HTMLAnchorElement>} */
   const articleLinks = document.querySelectorAll('a.threadlist_title')
+  const urls = [...articleLinks].map(a => a.href)
+  const urlsD = urls.map(url => url + '?t=' + date)
+  urls.push(...urlsD)
 
   let i = 0
-  for (const a of articleLinks) {
-    const url = a.href + '?t=' + date
+  for (const url of urls) {
     try {
       await archive(url)
     } catch (err) {
