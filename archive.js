@@ -8,6 +8,8 @@ const BASE_URL = process.env.URL
 const REQ_LIMIT = 23
 const WAIT_TIME = 60 * 1000 // 60s
 
+const date = +new Date()
+
 const archive = async (url) => {
   console.log(url)
   const r = await fetch('https://web.archive.org/save/', {
@@ -31,7 +33,7 @@ JSDOM.fromURL(BASE_URL).then(async (dom) => {
 
   let i = 0
   for (const a of articleLinks) {
-    const url = a.href
+    const url = a.href + '?t=' + date
     try {
       await archive(url)
     } catch (err) {
