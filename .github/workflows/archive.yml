@@ -7,7 +7,7 @@ on:
     - cron: "*/10 * * * *"
 
 env:
-  URL: https://2047.name/
+  URL: https://2047.name/, https://2047.name/c/inner, https://2047.name/c/water
 
 jobs:
   backup:
